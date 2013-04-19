@@ -1,0 +1,16 @@
+{
+    "properties": {
+        "http://www.jcp.org/jcr/1.0": {
+            "mixinTypes": [
+                {
+                    "$name": "{info:fedora/}checksum"
+                }
+            ]
+        },
+        "info:fedora/": {
+            "digest": "3da541559918a808c2402bba5012f6c60b27661c",
+            "digestAlgorithm": "SHA-1",
+            "size": 4
+        }
+    }
+}
