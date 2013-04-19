@@ -16,28 +16,6 @@
               "projections" : [ "fedora:/federated => /" ]
          }
     },
-    "clustering" : {
-        "clusterName" : "modeshape-cluster"
-    },
-    "query" : {
-        "enabled" : true,
-        "rebuildUponStartup" : "if_missing",
-        "indexStorage" : {
-            "type" : "filesystem",
-            "location" : "${fcrepo.modeshape.index.location:target/indexes}",
-            "lockingStrategy" : "native",
-            "fileSystemAccessType" : "auto"
-        }
-    },
-    "storage" : {
-        "cacheName" : "FedoraRepository",
-        "cacheConfiguration" : "${fcrepo.infinispan.cache_configuration:config/infinispan_configuration.xml}",
-        "binaryStorage" : {
-            "type" : "cache",
-            "dataCacheName" : "FedoraRepository",
-            "metadataCacheName" : "FedoraRepository"
-        }
-    },
     "security" : {
         "anonymous" : {
             "roles" : ["readonly","readwrite","admin"],
@@ -47,5 +25,5 @@
             { "classname" : "servlet" }
         ]
     },
-"node-types" : ["fedora-node-types.cnd", "config/bagit-node-types.cnd"]
+"node-types" : ["test-fedora-node-types.cnd", "test-bagit-node-types.cnd"]
 }
