@@ -6,15 +6,15 @@
         "default" : "fedora",
         "allowCreation" : true
     },
-    "externalSources" : {
-        "filesystem-objects" : {
-              "classname" : "org.modeshape.connector.filesystem.FileSystemConnector",
-              "directoryPath" : "target/test-classes/test-objects",
-              "readonly" : false,
-              "extraPropertiesStorage": "json",
-              "cacheTtlSeconds" : 5,
-              "projections" : [ "fedora:/federated => /" ]
-         }
+  "externalSources" : {
+    "targetDirectory" : {
+      "classname" : "org.modeshape.connector.filesystem.FileSystemConnector",
+      "directoryPath" : "target/test-classes/test-objects",
+      "readonly" : false,
+      "extraPropertiesStorage": "json",
+      "cacheTtlSeconds" : 5,
+      "projections" : [ "fedora:/federated => /" ]
+     }
     },
     "security" : {
         "anonymous" : {
@@ -25,5 +25,5 @@
             { "classname" : "servlet" }
         ]
     },
-"node-types" : ["test-fedora-node-types.cnd", "test-bagit-node-types.cnd"]
+"node-types" : ["fedora-node-types.cnd", "bagit-node-types.cnd"]
 }

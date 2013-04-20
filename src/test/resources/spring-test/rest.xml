@@ -19,18 +19,11 @@
 
     <context:annotation-config/>
 
-    <bean class="org.fcrepo.session.SessionFactory" />
-
     <jaxrs:server address="http://localhost:${test.port:8080}/rest">
         <jaxrs:serviceBeans>
-            <bean class="org.fcrepo.api.FedoraRepository"/>
             <bean class="org.fcrepo.api.FedoraDatastreams"/>
-            <bean class="org.fcrepo.api.FedoraIdentifiers"/>
-            <bean class="org.fcrepo.api.FedoraNamespaces"/>
             <bean class="org.fcrepo.api.FedoraObjects"/>
-            <bean class="org.fcrepo.api.FedoraFederatedContent"/>
-            <bean class="org.fcrepo.api.FedoraFieldSearch"/>
-            <bean class="org.fcrepo.api.FedoraSitemap"/>
+            <bean class="org.fcrepo.api.FedoraFederatedContent"/>    
         </jaxrs:serviceBeans>
         <jaxrs:extensionMappings>
             <entry key="json" value="application/json"/>
@@ -51,14 +44,12 @@
                     </util:map>
                 </property>
             </bean>
-            <!--<bean class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
-                <property name="ignoreNamespaces" value="true"/>
-            </bean>-->
         </jaxrs:providers>
     </jaxrs:server>
+    
+    <bean class="org.fcrepo.session.SessionFactory" />
 
     <!-- Mints PIDs-->
     <bean class="org.fcrepo.identifiers.UUIDPidMinter"/>
-
 
 </beans>
