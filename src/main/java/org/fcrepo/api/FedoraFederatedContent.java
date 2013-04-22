@@ -1,6 +1,7 @@
 package org.fcrepo.api;
 
 import static javax.ws.rs.core.Response.noContent;
+import static org.fcrepo.services.PathService.getObjectJcrNodePath;
 import static org.fcrepo.services.PathService.getDatastreamJcrNodePath;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -19,6 +20,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.fcrepo.AbstractResource;
+import org.fcrepo.FedoraObject;
 import org.fcrepo.services.DatastreamService;
 import org.fcrepo.services.PathService;
 import org.modeshape.jcr.JcrSession;
@@ -36,21 +38,36 @@ public class FedoraFederatedContent extends AbstractResource {
 	@Inject
 	DatastreamService datastreamService;
 
+	/**
+	 * Allow user to POST /objects/pid/federate?from=myFederatedStore
+	 * the resources from myFederatedStore are then cloned to /objects/pid
+	 * @param pid
+	 * @param from
+	 * @return
+	 * @throws RepositoryException
+	 */
 	@POST
 	public Response addFederatedDatastream(@PathParam("pid") final String pid,
 			@QueryParam("from") final String from) throws RepositoryException {
 
 		Session session = getAuthenticatedSession();		
-		String nodePath = federatePath(from);
+		String projectedNodePath = federatePath(from);
+		String newObjPath = getObjectJcrNodePath(pid);
 
 		try {
 			Workspace ws = (Workspace) session.getWorkspace();
-			Node federatedNode = session.getNode(nodePath);
+			Node externalNode = session.getNode(projectedNodePath);
 			
-			NodeIterator it = federatedNode.getNodes();
+			//Create new FedoraObject 'pid' and clone resources under 'from' param to 'pid' object
+			//TODO I was not able to clone are copy the parent node, we may want to revisit this logic
+			FedoraObject obj = new FedoraObject(session, newObjPath);
+			session.save();
+			
+			NodeIterator it = externalNode.getNodes();
 			while (it.hasNext()) {
 				Node node = it.nextNode();
-				versionFederatedNode(node);
+				node.addMixin("mix:shareable");
+				//versionFederatedNode(node);
 
 				String federatedSrc = node.getPath();
 				String cloneTo = getDatastreamJcrNodePath(pid, node.getName());
@@ -58,7 +75,7 @@ public class FedoraFederatedContent extends AbstractResource {
 				
 				try {
 					ws.clone("fedora", federatedSrc, cloneTo, false);
-					//Getting the shared node and letting modeshape know it's a fedora datastream
+					//Getting the cloned node and letting modeshape know it's a fedora datastream
 					Node sharedNode = session.getNode(cloneTo);
 					sharedNode.addMixin("fedora:datastream");
 				} catch (RepositoryException ex){

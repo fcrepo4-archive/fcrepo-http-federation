@@ -7,9 +7,17 @@
         "allowCreation" : true
     },
   "externalSources" : {
-    "targetDirectory" : {
+    "fileSystem" : {
       "classname" : "org.modeshape.connector.filesystem.FileSystemConnector",
       "directoryPath" : "target/test-classes/test-objects",
+      "readonly" : false,
+      "extraPropertiesStorage": "json",
+      "cacheTtlSeconds" : 5,
+      "projections" : [ "fedora:/federated => /" ]
+     },
+     "bagitFiles" : {
+      "classname" : "org.fcrepo.federation.bagit.BagItConnector",
+      "directoryPath" : "target/test-classes/test-bagit",
       "readonly" : false,
       "extraPropertiesStorage": "json",
       "cacheTtlSeconds" : 5,
