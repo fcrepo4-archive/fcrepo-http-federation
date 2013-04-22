@@ -26,8 +26,10 @@ import org.fcrepo.services.PathService;
 import org.modeshape.jcr.JcrSession;
 import org.modeshape.jcr.api.Workspace;
 import org.slf4j.Logger;
+import org.springframework.stereotype.Component;
 
-@Path("/objects/{pid}/federate")
+@Component
+@Path("/rest/objects/{pid}/federate")
 public class FedoraFederatedContent extends AbstractResource {
 
 	private final Logger logger = getLogger(FedoraDatastreams.class);
@@ -47,11 +49,12 @@ public class FedoraFederatedContent extends AbstractResource {
 	 * @throws RepositoryException
 	 */
 	@POST
+	@Path("")
 	public Response addFederatedDatastream(@PathParam("pid") final String pid,
 			@QueryParam("from") final String from) throws RepositoryException {
 
 		Session session = getAuthenticatedSession();		
-		String projectedNodePath = federatePath(from);
+		String projectedNodePath = from;
 		String newObjPath = getObjectJcrNodePath(pid);
 
 		try {
@@ -81,12 +84,18 @@ public class FedoraFederatedContent extends AbstractResource {
 				} catch (RepositoryException ex){
 					logger.error("Could not clone node " + 
 							node.getName() + " - " + 
-							ex.getMessage());
+							ex.getMessage(),ex);
 				} 			
 			}
 
 			session.save();
 			
+		} catch (RepositoryException ex) {
+		    logger.error("Could not federate a node! " + ex.getMessage(), ex);
+		    throw ex;
+		} catch (RuntimeException ex) {
+            logger.error("Could not federate a node! " + ex.getMessage(), ex);
+            throw ex;
 		} finally {
 			session.logout();
 		}
@@ -106,24 +115,6 @@ public class FedoraFederatedContent extends AbstractResource {
 		session.save();
 		versionMgr.checkin(node.getPath());
 		return result;
-	}
-
-		
-	/**
-	 * Returns path to federated node
-	 * @param path
-	 * @return
-	 */
-	private static String federatePath(String path) {
-		String str = path;
-		if(path.indexOf("/") != 0)
-			str = "/" + path;
-		
-		if(str.indexOf(PathService.FEDERATED_PATH) >= 0) {
-			return str;
-		} else {
-			return PathService.FEDERATED_PATH + str;
-		}
 	}
 
 }
